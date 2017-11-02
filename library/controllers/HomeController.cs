@@ -70,5 +70,68 @@ namespace Library.Controllers
 
         return View("ViewBooks", booksFound);
     }
+
+    [HttpGet("/patron/add")]
+    public ActionResult AddPatron()
+    {
+      return View();
+    }
+
+    [HttpPost("/patron/view-all")]
+    public ActionResult AddViewPatron()
+    {
+      Patron newPatron = new Patron(Request.Form["patron-name"], Request.Form["patron-birth-date"]);
+      newPatron.Save();
+
+      return View("Index");
+    }
+
+    [HttpGet("/patron/view-all")]
+    public ActionResult ViewPatron()
+    {
+      List<Patron> allPatrons = Patron.GetAll();
+
+      return View("ViewPatrons", allPatrons);
+    }
+
+    [HttpGet("/book/{bookId}/checkout")]
+    public ActionResult CheckoutBook(int bookId)
+    {
+      Book checkoutBook = Book.Find(bookId);
+
+      return View("Checkout", checkoutBook);
+    }
+
+    [HttpPost("/book/{bookId}/checkout/confirm")]
+    public ActionResult CheckoutConfirm(int bookId)
+    {
+      Dictionary<string, object> model = new Dictionary<string, object>();
+      Book checkoutBook = Book.Find(bookId);
+      Patron checkoutPatron = Patron.Find(Int32.Parse(Request.Form["patron-id"]));
+      if (checkoutPatron.GetName() == "")
+      {
+        return View("CheckoutError", bookId);
+      }
+      else
+      {
+        Checkout newCheckout = new Checkout(bookId, Int32.Parse(Request.Form["patron-id"]), Request.Form["date-borrowed"], Request.Form["date-due"]);
+
+        newCheckout.Save();
+
+        model.Add("book", checkoutBook);
+        model.Add("patron", checkoutPatron);
+        model.Add("checkout", newCheckout);
+
+        return View("CheckoutConfirm", model);
+      }
+    }
+
+    [HttpGet("/checkout/list")]
+    public ActionResult BorrowedList()
+    {
+      List<Checkout> allCheckouts = Checkout.GetAll();
+
+      return View("BorrowedList", allCheckouts);
+    }
   }
 }

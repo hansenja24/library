@@ -1,0 +1,19 @@
+@{
+  Layout = "_Layout";
+}
+
+@section scripts
+{
+}
+
+<body>
+  <h1>Checkout Confirmation</h1>
+
+  <h2>Book: @Model["book"].GetTitle()</h2>
+  <h2>Borrower: @Model["patron"].GetName()</h2>
+  <br>
+  <h3>Checkout Confirmation Ticket: @Model["checkout"].GetId()</h3>
+
+  <a href="/checkout/list">View Checkout List</a>
+
+</body>

@@ -1,0 +1,51 @@
+@{
+  Layout = "_Layout";
+}
+
+@section scripts {
+}
+
+<body>
+
+  <h1>Patron List</h1>
+
+  <form class="form-group" action="/search/patron-name" method="post">
+    <label for="search-patron-name">Search by Name:</label>
+    <input type="text" name="search-patron-name">
+    <button type="submit" name="button">Search</button>
+
+  </form>
+
+  <form class="form-group" action="/search/patron-id" method="post">
+    <label for="search-patron-id">Search by ID:</label>
+    <input type="text" name="search-patron-id">
+    <button type="submit" name="button">Search</button>
+  </form>
+
+  <table>
+    <tr>
+      <th>Patron Name</th>
+      <th>Patron Id</th>
+      <th>Date of Birth</th>
+      <th>Books Borrowed</th>
+    </tr>
+    @foreach (var patron in @Model)
+    {
+      <tr>
+      <td>@patron.GetName()</td>
+      <td>@patron.GetId()</td>
+      <td>@patron.GetDateOfBirth()</td>
+      <td>
+      @foreach (var book in @patron.GetBorrowHistory())
+      {
+        @book.GetTitle()<br>
+      }
+      </td>
+      </tr>
+    }
+  </table>
+  <br>
+
+  <a href="/">Homepage</a><br>
+  <a href="/patron/view-all">View Full List</a><br>
+</body>

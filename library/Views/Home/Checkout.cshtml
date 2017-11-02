@@ -1,0 +1,26 @@
+@{
+  Layout = "_Layout";
+}
+
+@section scripts
+{
+}
+
+<body>
+  <h1>Book Checkout</h1>
+
+  <h2>Title: @Model.GetTitle()</h2>
+
+  <form class="form-group" action="/book/@Model.GetId()/checkout/confirm" method="post">
+    <label for="patron-id">Patron Id:</label>
+    <input type="text" name="patron-id">
+
+    <label for="date-borrowed">Date Borrowed:</label>
+    <input type="date" name="date-borrowed">
+
+    <label for="date-due">Patron Id:</label>
+    <input type="date" name="date-due">
+
+    <button type="submit" name="button">Checkout</button>
+  </form>
+</body>

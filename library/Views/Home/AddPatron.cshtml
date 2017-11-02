@@ -1,0 +1,22 @@
+@{
+  Layout = "_Layout";
+}
+
+@section scripts {
+}
+<body>
+  <h1>Add Patron</h1>
+
+  <form class="form-group" action="/patron/view-all" method="post">
+    <label for="patron-name">Name:</label>
+    <input type="text" name="patron-name" class="form-control">
+    <br>
+    <label for="patron-birth-date">Date of Birth:</label>
+    <input type="date" name="patron-birth-date" class="form-control">
+    <br>
+
+    <button type="submit" class="btn btn-info"name="button">Add Patron</button>
+  </form>
+
+  <a href="/patron/view-all">View All Patrons</a>
+</body>

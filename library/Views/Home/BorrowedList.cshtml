@@ -1,0 +1,42 @@
+@{
+  Layout = "_Layout";
+}
+
+@section scripts {
+}
+
+<body>
+  <h1>List of Borrowed Books</h1>
+
+  <table>
+    <tr>
+      <th>Title</th>
+      <th>Book Id</th>
+      <th>Patron Name</th>
+      <th>Patron Id</th>
+      <th>Date Borrowed</th>
+      <th>Date Due</th>
+      <th>Return Status</th>
+    </tr>
+    @foreach (var checkout in @Model)
+    {
+      <tr>
+      <td>@checkout.GetBookTitle()</td>
+      <td>@checkout.GetBookId()</td>
+      <td>@checkout.GetPatronName()</td>
+      <td>@checkout.GetPatronId()</td>
+      <td>@checkout.GetDateBorrowed()</td>
+      <td>@checkout.GetDueDate()</td>
+      @if(@checkout.GetReturnStatus() == true)
+      {
+        <td>Y</td>
+      }
+      else
+      {
+        <td>N</td>
+      }
+        </tr>
+    }
+  </table>
+
+</body>
