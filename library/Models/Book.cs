@@ -136,6 +136,30 @@ namespace Library.Models
       return allBook;
     }
 
+    public static List<Author> GetAuthors()
+    {
+      List<Author> bookAuthors = new List<Author> {};
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT authors.* FROM books JOIN books_authors ON (books.id = books_authors.book_id) JOIN authors (books_authors.author_id = authors.id) WHERE book.id = (@searchId);";
+      var rdr = cmd.ExecuteReader() as MySqlDataReader;
+      while(rdr.Read())
+      {
+        int authorId = rdr.GetInt32(0);
+        string authorTitle = rdr.GetString(1);
+        int authorCopies = rdr.GetInt32(2);
+        Author newAuthor = new Author(authorTitle, authorCopies, authorId);
+        bookAuthors.Add(newAuthor);
+      }
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return bookAuthors;
+    }
+
     public static Book Find(int id)
     {
       MySqlConnection conn = DB.Connection();
@@ -247,7 +271,7 @@ namespace Library.Models
       }
     }
 
-    public static void DeleteBook()
+    public void DeleteBook()
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();

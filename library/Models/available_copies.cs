@@ -20,7 +20,7 @@ namespace Library.Models
           return this.GetId().GetHashCode();
         }
 
-        public string GetNumberOfCopies()
+        public int GetNumberOfCopies()
         {
           return _numberCopies;
         }

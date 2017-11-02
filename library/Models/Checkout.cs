@@ -23,17 +23,17 @@ namespace Library.Models
       _returnstatus = returnstatus;
     }
 
-    public string GetId()
+    public int GetId()
     {
       return _id;
     }
 
-    public string GetBookId()
+    public int GetBookId()
     {
       return _bookid;
     }
 
-    public string GetPatronId()
+    public int GetPatronId()
     {
       return _patronid;
     }
@@ -48,9 +48,9 @@ namespace Library.Models
       return _duedate;
     }
 
-    public string GetReturnStatus()
+    public int GetReturnStatus()
     {
       return _returnstatus;
     }
-
-    
+}
+}

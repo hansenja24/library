@@ -78,7 +78,7 @@ namespace Library.Models
         string patronName = rdr.GetString(1);
         string patronDOB = rdr.GetString(2);
         Patron newPatron = new Patron(patronName, patronDOB, patronId);
-        allPatron.Add(newPatron);
+        allPatrons.Add(newPatron);
       }
       conn.Close();
       if (conn != null)
@@ -184,7 +184,7 @@ namespace Library.Models
       }
     }
 
-    public static List<Book> GetBorrowHistory()
+    public List<Book> GetBorrowHistory()
     {
       List<Book> allBook = new List<Book> {};
       MySqlConnection conn = DB.Connection();
@@ -214,7 +214,7 @@ namespace Library.Models
       return allBook;
     }
 
-    public static void DeletePatron()
+    public void DeletePatron()
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
