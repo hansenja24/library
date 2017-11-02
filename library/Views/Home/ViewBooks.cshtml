@@ -1,1 +1,43 @@
-<p>@Model</p>
+<h1>Library Books</h1>
+
+<form class="form-group" action="/search/book" method="post">
+  <label for="search-book-title">Search by Book:</label>
+  <input type="text" name="search-book-title">
+  <button type="submit" name="button">Search</button>
+
+</form>
+
+<form class="form-group" action="/search/authors" method="post">
+  <label for="search-author-name">Search by Author:</label>
+  <input type="text" name="search-author-name">
+  <button type="submit" name="button">Search</button>
+</form>
+
+<table>
+  <tr>
+    <th>Book Title</th>
+    <th>Book Id</th>
+    <th>Authors</th>
+    <th>Total Copies</th>
+    <th>Available Copies</th>
+  </tr>
+  @foreach (var book in @Model)
+  {
+    <tr>
+    <td>@book.GetTitle()</td>
+    <td>@book.GetId()</td>
+    <td>
+    @foreach (var author in @book.GetAuthors())
+    {
+      @author.GetName()<br>
+    }
+    </td>
+    <td>@book.GetCopies()</td>
+    <td>//Available Copies here</td>
+    </tr>
+  }
+</table>
+<br>
+
+<a href="/">Homepage</a><br>
+<a href="/book/view-all">View All Books</a><br>

@@ -93,9 +93,9 @@ namespace Library.Models
     //   }
     // }
 
-    public static bool IsNewAuthor(Author checkAuthor)
+    public bool IsNewAuthor()
     {
-      bool IsNewAuthor = false;
+      bool IsNewAuthor = true;
       List<Author> allAuthor = new List<Author> {};
       MySqlConnection conn = DB.Connection();
       conn.Open();
@@ -116,9 +116,9 @@ namespace Library.Models
       }
       foreach (var author in allAuthor)
       {
-        if(author.GetName() == checkAuthor.GetName())
+        if(author.GetName() == _name)
         {
-          IsNewAuthor = true;
+          IsNewAuthor = false;
         }
       }
       return IsNewAuthor;
@@ -176,6 +176,74 @@ namespace Library.Models
       }
       return newAuthor;
     }
+
+    public static List<Book> SearchByAuthor(string name)
+    {
+      List<Book> foundBooks = new List<Book> {};
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT books.* FROM authors JOIN books_authors ON (authors.id = books_authors.author_id) JOIN books ON (books.id = books_authors.book_id) WHERE authors.name LIKE (@searchName);";
+
+      MySqlParameter searchName = new MySqlParameter();
+      searchName.ParameterName = "@searchName";
+      searchName.Value = '%'+name+'%';
+      cmd.Parameters.Add(searchName);
+
+      var rdr = cmd.ExecuteReader() as MySqlDataReader;
+      int BookId = 0;
+      string BookTitle = "";
+      int BookCopies = 0;
+
+      while(rdr.Read())
+      {
+        BookId = rdr.GetInt32(0);
+        BookTitle = rdr.GetString(1);
+        BookCopies = rdr.GetInt32(2);
+        Book foundBook = new Book(BookTitle, BookCopies, BookId);
+        foundBooks.Add(foundBook);
+      }
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return foundBooks;
+    }
+
+
+
+
+    public Author FindAuthor()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT * FROM authors WHERE name = (@searchName);";
+
+      MySqlParameter searchName = new MySqlParameter();
+      searchName.ParameterName = "@searchName";
+      searchName.Value = _name;
+      cmd.Parameters.Add(searchName);
+
+      var rdr = cmd.ExecuteReader() as MySqlDataReader;
+      int AuthorId = 0;
+      string AuthorName = "";
+
+      while(rdr.Read())
+      {
+        AuthorId = rdr.GetInt32(0);
+        AuthorName = rdr.GetString(1);
+      }
+      Author newAuthor = new Author(AuthorName, AuthorId);
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return newAuthor;
+    }
+
 
     public static void DeleteAll()
     {

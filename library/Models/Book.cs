@@ -59,17 +59,12 @@ namespace Library.Models
       conn.Open();
 
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"INSERT INTO books (title, number_of_copies) VALUES (@title, @copies); INSERT INTO available_copies (book_id, number_of_copies) VALUES (@bookId, @copies);";
+      cmd.CommandText = @"INSERT INTO books (title, number_of_copies) VALUES (@title, @copies); INSERT INTO available_copies (number_of_copies) VALUES (@copies);";
 
       MySqlParameter title = new MySqlParameter();
       title.ParameterName = "@title";
       title.Value = this._title;
       cmd.Parameters.Add(title);
-
-      MySqlParameter bookId = new MySqlParameter();
-      bookId.ParameterName = "@bookId";
-      bookId.Value = this._id;
-      cmd.Parameters.Add(bookId);
 
       MySqlParameter copies = new MySqlParameter();
       copies.ParameterName = "@copies";
@@ -104,12 +99,45 @@ namespace Library.Models
       cmd.Parameters.Add(authorId);
 
       cmd.ExecuteNonQuery();
-      _id = (int) cmd.LastInsertedId;
       conn.Close();
       if (conn != null)
       {
         conn.Dispose();
       }
+    }
+
+    public static List<Book> SearchByTitle(string name)
+    {
+      List<Book> foundBooks = new List<Book> {};
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT * FROM books WHERE title LIKE @searchTitle;";
+
+      MySqlParameter searchTitle = new MySqlParameter();
+      searchTitle.ParameterName = "@searchTitle";
+      searchTitle.Value = '%'+name+'%';
+      cmd.Parameters.Add(searchTitle);
+
+      var rdr = cmd.ExecuteReader() as MySqlDataReader;
+      int BookId = 0;
+      string BookTitle = "";
+      int BookCopies = 0;
+
+      while(rdr.Read())
+      {
+        BookId = rdr.GetInt32(0);
+        BookTitle = rdr.GetString(1);
+        BookCopies = rdr.GetInt32(2);
+        Book foundBook = new Book(BookTitle, BookCopies, BookId);
+        foundBooks.Add(foundBook);
+      }
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return foundBooks;
     }
 
     public static List<Book> GetAll()
@@ -136,20 +164,25 @@ namespace Library.Models
       return allBook;
     }
 
-    public static List<Author> GetAuthors()
+    public List<Author> GetAuthors()
     {
       List<Author> bookAuthors = new List<Author> {};
       MySqlConnection conn = DB.Connection();
       conn.Open();
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"SELECT authors.* FROM books JOIN books_authors ON (books.id = books_authors.book_id) JOIN authors (books_authors.author_id = authors.id) WHERE book.id = (@searchId);";
+      cmd.CommandText = @"SELECT authors.* FROM books JOIN books_authors ON (books.id = books_authors.book_id) JOIN authors ON (books_authors.author_id = authors.id) WHERE books.id = @searchId;";
+
+      MySqlParameter searchId = new MySqlParameter();
+      searchId.ParameterName = "@searchId";
+      searchId.Value = _id;
+      cmd.Parameters.Add(searchId);
+
       var rdr = cmd.ExecuteReader() as MySqlDataReader;
       while(rdr.Read())
       {
         int authorId = rdr.GetInt32(0);
         string authorTitle = rdr.GetString(1);
-        int authorCopies = rdr.GetInt32(2);
-        Author newAuthor = new Author(authorTitle, authorCopies, authorId);
+        Author newAuthor = new Author(authorTitle, authorId);
         bookAuthors.Add(newAuthor);
       }
       conn.Close();

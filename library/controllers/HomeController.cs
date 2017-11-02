@@ -19,29 +19,56 @@ namespace Library.Controllers
     {
       return View();
     }
-
-    [HttpPost("/book/view-all")]
-    public ActionResult ViewBooks(int id)
+    [HttpGet("/book/view-all")]
+    public ActionResult ViewBooks()
     {
       Dictionary<string, object> model = new Dictionary<string, object>();
-      Book newBook = new Book(Request.Form["book-title"], Int32.Parse(Request.Form["book-copies"]);
+      List<Book> allBooks = Book.GetAll();
 
+      return View("ViewBooks", allBooks);
+    }
+
+    [HttpPost("/book/view-all")]
+    public ActionResult AddViewBooks()
+    {
+      Book newBook = new Book(Request.Form["book-title"], Int32.Parse(Request.Form["book-copies"]));
+      newBook.Save();
       int authorValue = Int32.Parse(Request.Form["number-loop"]);
       for(var i=1;i<=authorValue;i++)
       {
-        Author newAuthor = new Author(Request.Form["author-name"+i])
+        Author newAuthor = new Author(Request.Form["author-name"+i]);
         if(newAuthor.IsNewAuthor() == true)
         {
           newAuthor.Save();
+          newBook.AddAuthor(newAuthor);
         }
-        newbook.AddAuthor(newAuthor);
+        else
+        {
+          Author repeatAuthor = newAuthor.FindAuthor();
+          newBook.AddAuthor(repeatAuthor);
+        }
       }
-      List<Author> bookAuthors = newBook.GetAuthors();
+      List<Book> allBooks = Book.GetAll();
 
-      model.Add("book", newBook);
-      model.Add("authors", bookAuthors);
+      return View("ViewBooks", allBooks);
+    }
 
-      return View("ViewBooks",model);
+    [HttpPost("/search/authors")]
+    public ActionResult SearchAuthors()
+    {
+
+        List<Book> booksFound = Author.SearchByAuthor(Request.Form["search-author-name"]);
+
+        return View("ViewBooks", booksFound);
+    }
+
+    [HttpPost("/search/book")]
+    public ActionResult SearchBook()
+    {
+
+        List<Book> booksFound = Book.SearchByTitle(Request.Form["search-book-title"]);
+
+        return View("ViewBooks", booksFound);
     }
   }
 }
